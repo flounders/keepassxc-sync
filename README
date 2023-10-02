@@ -1,0 +1,10 @@
+# keepassxc-sync
+
+Simple scripts for bidirectional syncing of local KeePass files, one of which is shared via network
+with programs such as SyncThing or DropBox.
+
+Dependencies so far:
+
+- fish
+- coreutils (dirname and basename)
+- expect

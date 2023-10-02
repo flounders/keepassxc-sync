@@ -1,0 +1,42 @@
+#!/usr/bin/env fish
+
+set currentTime (date -Iseconds)
+
+argparse h/help -- $argv
+
+if set -ql _flag_help
+  echo "keepassxc-sync [-h|--help] FILE1 FILE2"
+  exit
+end
+
+set file1RealPath (realpath $argv[1])
+set file2RealPath (realpath $argv[2])
+
+set file1DirPath (dirname $file1RealPath)
+set file2DirPath (dirname $file2RealPath)
+
+set file1Basename (basename $file1RealPath)
+set file2Basename (basename $file2RealPath)
+
+# make backups of our files with the format <filename>.<ISO Datetime>.bak
+set file1Backup "$file1DirPath/$file1Basename.$currentTime.bak"
+set file2Backup "$file2DirPath/$file2Basename.$currentTime.bak"
+cp $argv[1] $file1Backup
+cp $argv[2] $file2Backup
+
+# log dry runs for merging both files in either direction
+# format follows <filename>.<ISO Datetime>.dry
+set -x PASSWORD (read -s -P "Password:")
+
+set FILE1DRYLOG "$file1DirPath/$file1Basename.$currentTime.dry"
+set FILE2DRYLOG "$file2DirPath/$file2Basename.$currentTime.dry"
+expect -f keepassxc-sync.dry-run.exp $argv[1] $argv[2] $FILE1DRYLOG
+expect -f keepassxc-sync.dry-run.exp $argv[2] $argv[1] $FILE2DRYLOG
+
+# files get merged here with a log formatted as <filename>.<ISO Datetime>.merge
+set FILE1MERGELOG "$file1DirPath/$file1Basename.$currentTime.merge"
+set FILE2MERGELOG "$file2DirPath/$file2Basename.$currentTime.merge"
+expect -f keepassxc-sync.merge.exp $argv[1] $argv[2] $FILE1MERGELOG
+expect -f keepassxc-sync.merge.exp $argv[2] $argv[1] $FILE2MERGELOG
+
+set -e PASSWORD

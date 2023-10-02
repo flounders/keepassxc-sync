@@ -1,0 +1,10 @@
+#!/usr/bin/expect
+
+set file1 [lindex $argv 0]
+set file2 [lindex $argv 1]
+set logpath [lindex $argv 2]
+spawn keepassxc-cli merge -s --dry-run $file1 $file2
+log_file -noappend $logpath
+expect "Enter password to unlock $file1:"
+send "$env(PASSWORD)\r"
+expect eof
