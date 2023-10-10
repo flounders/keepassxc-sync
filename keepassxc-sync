@@ -1,6 +1,8 @@
 #!/usr/bin/env fish
 
-set currentTime (date -Iseconds)
+# to make datetimes with compatible filenames on Windows, we have to replace ':' with
+# something legal
+set currentTime (date -Iseconds | sed 's/:/./g')
 
 argparse h/help -- $argv
 

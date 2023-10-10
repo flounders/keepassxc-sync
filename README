@@ -5,6 +5,8 @@ with programs such as SyncThing or DropBox.
 
 Dependencies so far:
 
+- keepassxc
 - fish
 - coreutils (dirname and basename)
 - expect
+- sed
